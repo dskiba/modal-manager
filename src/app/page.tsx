@@ -4,11 +4,11 @@ import { ModalManagerProvider } from 'libs/modal-manager/react'
 import {
   selectStoreField, selectTodo,
   todosStore,
-  useSelectField, useSelector, useSelectTodos,
+  useSelectField, useSelector, useSelectTodosIds,
   useTodos,
   useTodosStore
 } from 'libs/todos/todos'
-import { FC, useRef } from 'react'
+import { FC, memo, useRef } from 'react'
 
 const logs = 'logs'
 
@@ -39,18 +39,14 @@ export default function Home() {
 
 
 const Todos = () => {
-  const todos = useSelectTodos()
+  const todos = useSelectTodosIds()
   return (
     <div>
       <h1>Todos</h1>
       <ul>
         {todos.map(todo => (
-          <Todo id={todo.id} key={todo.id} />
+          <MemoTodo id={todo.id} key={todo.id} />
         ))}
-        {/*<Todo id={0} />*/}
-        {/*<Todo id={1} />*/}
-        {/*<Todo id={3} />*/}
-        {/*<Todo id={4} />*/}
       </ul>
       <button onClick={todosStore.addTodo}>Add todo</button>
     </div>
@@ -78,3 +74,5 @@ const Todo: FC<{ id: number }> = ({ id }) => {
     {/*<button onClick={() => removeTodo(todo.id)}>Remove</button>*/}
   </div>
 }
+
+const MemoTodo = memo(Todo)

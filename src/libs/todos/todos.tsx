@@ -59,33 +59,27 @@ export const selectTodo = (id: number) => (store: typeof todosStore) => {
   return store.getTodos().find(todo => todo.id === id)
 }
 
-export const useSelectTodos = ()  => {
+export const useSelectTodosIds = () => {
   return useSelector(store => store.getTodos(), (prev, next) => prev.length === next.length)
 }
 
 
-export const useSelector = <Selected = unknown>(selector: (store: typeof todosStore) => Selected, compare?: (prev: Selected,  next: Selected)=> boolean ): Selected => {
+export const useSelector = <Selected = unknown>(
+  selector: (store: typeof todosStore) => Selected,
+  comparator: (prev: Selected, next: Selected) => boolean = (prev, next) => prev === next
+): Selected => {
   const prevValue = useRef(selector(todosStore))
   let cb = useCallback(() => {
-    const currentValue = selector(todosStore)
-    if(compare) {
-      const isSame = compare(prevValue.current, currentValue)
-      console.log({ isSame })
-      if(!isSame) {
+      const currentValue = selector(todosStore)
+      const isSame = comparator(prevValue.current, currentValue)
+      if (!isSame) {
         prevValue.current = currentValue
       } else {
         return prevValue.current
       }
       return currentValue
-    } else {
-      if(prevValue.current !== currentValue) {
-        prevValue.current = currentValue
-      } else {
-        return prevValue.current
-      }
-      return currentValue
-    }
-  }, [compare, selector])
+    }, [comparator, selector]
+  )
 
   useSyncExternalStore(todosStore.subscribe, cb)
   return selector(todosStore)
