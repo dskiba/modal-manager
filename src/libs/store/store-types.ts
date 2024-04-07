@@ -10,7 +10,6 @@ export type Actions<State, R extends Reducers<State>> = {
 
 export type Store<State, R extends Reducers<State>> = {
   getState: () => State,
-  setState: (fn: (currState: State) => State) => void,
   subscribe: (listener: Listener) => () => void,
   actions: { [K in keyof R]: (payload?: Parameters<R[K]>[1] | never) => void }
 };

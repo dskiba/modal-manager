@@ -11,7 +11,8 @@ export const createStoreSelector = <S = unknown>(store: Store<S, any>) => {
       store.getState,
       store.getState,
       selector,
-      isEqual)
+      isEqual
+    )
   }
 }
 

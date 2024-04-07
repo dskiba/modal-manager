@@ -26,7 +26,7 @@ export const createStore = <State, R extends Reducers<State>>(initialState: Stat
     return acc
   }, {} as Actions<State, R>)
 
-  return { getState, setState, subscribe, actions }
+  return { getState, subscribe, actions }
 }
 
 

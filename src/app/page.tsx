@@ -43,10 +43,6 @@ const Todos = () => {
   )
 }
 
-setTimeout(() => {
-  todoActions.addTodo()
-}, 2000)
-
 const Todo: FC<{ id: number }> = ({ id }) => {
   const todo = useSelectTodo(id)
   console.log('render-id:', id)
