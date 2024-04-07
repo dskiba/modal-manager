@@ -1,101 +1,33 @@
 'use client'
-import { useCallback, useRef, useSyncExternalStore } from 'react'
+import { createStore, createStoreSelector } from 'libs/store'
+
 
 let nextId = 0
-let todos = [{ id: nextId++, text: 'Todo #1' },
+
+type Todo = { id: number, text: string };
+
+let todos: Array<Todo> = [{ id: nextId++, text: 'Todo #1' },
   { id: nextId++, text: 'Todo #2' },
   { id: nextId++, text: 'Todo #3' },
   { id: nextId++, text: 'Todo #4' },
   { id: nextId++, text: 'Todo #5' },
 ]
-type Listener = () => void;
-let listeners: Array<Listener> = []
 
-export const todosStore = {
-  subscribe(listener: Listener) {
-    listeners = [...listeners, listener]
-    return () => {
-      listeners = listeners.filter(l => l !== listener)
-    }
+
+const todosStore = createStore(todos, {
+  addTodo: (state) => {
+    return [...state, { id: nextId++, text: 'Todo #' + nextId }]
   },
-  getTodos() {
-    return todos
+  edit: (state: Todo[], payload: { id: number, text: string }) => {
+    return state.map(todo => todo.id === payload.id ? { ...todo, text: payload.text } : todo)
   },
-  addTodo() {
-    todos = [...todos, { id: nextId++, text: 'Todo #' + nextId }]
-    emitChange()
-  },
-  removeTodo(id: number) {
-    todos = todos.filter(todo => todo.id !== id)
-    emitChange()
-  },
-  editTodo(id: number, text: string) {
-    todos = todos.map(todo => todo.id === id ? { ...todo, text } : todo)
-    emitChange()
-  }
-}
-
-function emitChange() {
-  for (let listener of listeners) {
-    listener()
-  }
-}
-
-export const useTodos = () => {
-  return useSelector(s => s.getTodos())
-}
-
-export const selectStoreField =
-  <Field extends keyof typeof todosStore>(field: Field) => (store: typeof todosStore) => {
-    return store[field] as typeof todosStore[Field]
-  }
+})
 
 
-export const useTodosStore = () => {
-  return useSelector(s => s.getTodos())
-}
+const useTodosSelector = createStoreSelector(todosStore)
+export const todoActions = todosStore.actions
 
-export const selectTodo = (id: number) => (store: typeof todosStore) => {
-  return store.getTodos().find(todo => todo.id === id)
-}
-
-export const useSelectTodosIds = () => {
-  return useSelector(store => store.getTodos(), (prev, next) => prev.length === next.length)
-}
+export const useSelectTodosIds = () => useTodosSelector((state) => state.map(t => t.id), (prev, next) => prev.length === next.length)
+export const useSelectTodo = (id: number) => useTodosSelector(state => state.find(todo => todo.id === id))
 
 
-export const useSelector = <Selected = unknown>(
-  selector: (store: typeof todosStore) => Selected,
-  comparator: (prev: Selected, next: Selected) => boolean = (prev, next) => prev === next
-): Selected => {
-  const prevValue = useRef(selector(todosStore))
-  let cb = useCallback(() => {
-      const currentValue = selector(todosStore)
-      const isSame = comparator(prevValue.current, currentValue)
-      if (!isSame) {
-        prevValue.current = currentValue
-      } else {
-        return prevValue.current
-      }
-      return currentValue
-    }, [comparator, selector]
-  )
-
-  useSyncExternalStore(todosStore.subscribe, cb)
-  return selector(todosStore)
-}
-
-
-// export function createModalManagerContext(context = ReactReduxContext) {
-//   return function useReduxContext(): ReactReduxContextValue {
-//     const contextValue = React.useContext(context)
-//
-//     if (process.env.NODE_ENV !== 'production' && !contextValue) {
-//       throw new Error(
-//         'could not find react-redux context value; please ensure the component is wrapped in a <Provider>',
-//       )
-//     }
-//
-//     return contextValue!
-//   }
-// }
