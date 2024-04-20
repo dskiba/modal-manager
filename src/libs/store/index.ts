@@ -1,3 +1,3 @@
 export * from './store'
+export * from './types'
 export * from './react'
-export * from './store-types'

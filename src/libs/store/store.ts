@@ -1,4 +1,4 @@
-import { Actions, Listener, Reducers, Store } from './store-types'
+import { Actions, Listener, Reducers, Store } from './types'
 
 export const createStore = <State, R extends Reducers<State>>(initialState: State, reducers: R): Store<State, R> => {
   let state: State = initialState

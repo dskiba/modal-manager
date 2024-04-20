@@ -1,4 +1,4 @@
-import { Store } from './store-types'
+import { Store } from './types'
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector'
 
 export const createUseStoreSelector = <S = unknown>(store: Store<S, any>) => {
