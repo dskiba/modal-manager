@@ -1,10 +1,11 @@
 'use client'
-import { createStore, createStoreSelector } from 'libs/store'
+import { createStore, createUseStoreSelector } from 'libs/store'
 
 
-let nextId = 0
+let nextId: TodoId = 0
 
-type Todo = { id: number, text: string };
+type TodoId = number
+type Todo = { id: TodoId, text: string };
 
 let todos: Array<Todo> = [{ id: nextId++, text: 'Todo #1' },
   { id: nextId++, text: 'Todo #2' },
@@ -23,7 +24,7 @@ const todosStore = createStore(todos, {
   },
 })
 
-const useTodosSelector = createStoreSelector(todosStore)
+const useTodosSelector = createUseStoreSelector(todosStore)
 
 export const todoActions = todosStore.actions
 
