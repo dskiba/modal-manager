@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { ModalDemoWithHookRules } from './demo'
 import Link from 'next/link'
 import React from 'react'
-import { ModalsRenderer } from './modals'
+import { ModalsRenderer } from './demo'
 
 export const metadata: Metadata = {
   title: 'Custom demo',

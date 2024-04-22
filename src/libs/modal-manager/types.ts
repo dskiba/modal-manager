@@ -20,12 +20,6 @@ export enum ModalStatus {
   CLOSED = 'CLOSED',
 }
 
-export type ModalManager = {
-  stack: ModalStack
-  open: (modal: Modal) => void
-  close: (id: ModalId) => void
-}
-
 export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ModalRequest<T = FC<any>> = WithOptional<Modal<T>, 'id' | 'status' | 'props'>

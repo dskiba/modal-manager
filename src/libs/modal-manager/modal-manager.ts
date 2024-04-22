@@ -3,7 +3,7 @@ import { createStore } from 'libs/store'
 import { generateId } from './utils'
 
 export const createModalManager = (initStack: ModalStack = []) => createStore(initStack, {
-  open: (modals: ModalStack, modal: ModalRequest) => {
+  open: (modals, modal: ModalRequest) => {
     const idx = modals.findIndex(m => m.id === modal.id)
     const modalFromStack = modals[idx]
     if (!modalFromStack) {
