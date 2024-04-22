@@ -1,16 +1,15 @@
-import { ReactNode } from 'react'
+import { FC } from 'react'
 
 export type ModalId = string
 
-export type Modal = {
+export type Modal<T = FC<any>> = {
   id: string
+  children: T
   status?: ModalStatus
-  children: ReactNode
-  props: Record<string, any>
+  props?: PropsFrom<T>
 }
 
 export type ModalStack = Array<Modal>
-
 
 export enum ModalStatus {
   /** Modal initiated and rendered. */
@@ -27,12 +26,12 @@ export type ModalManager = {
   close: (id: ModalId) => void
 }
 
-export type CreateModalManager = () => ModalManager
-
-export type Subscriber = () => void
-
-export type UncontrolledModalRequested = Partial<Omit<Modal, 'id'>>
-
 export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type ModalRequest = WithOptional<Modal, 'id' | 'status'>
+export type ModalRequest<T = FC<any>> = WithOptional<Modal<T>, 'id' | 'status' | 'props'>
+
+export type PropsFrom<TComponent> = TComponent extends React.FC<infer Props>
+  ? Props
+  : TComponent extends React.Component<infer Props>
+    ? Props
+    : never

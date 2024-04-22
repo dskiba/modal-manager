@@ -4,7 +4,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import '@mantine/core/styles.css'
 
-import { ColorSchemeScript, MantineProvider, createTheme } from '@mantine/core'
+import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core'
+import { EbayProvider } from 'app/ebay/ebay-demo'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,9 +16,8 @@ export const metadata: Metadata = {
 
 
 const theme = createTheme({
-
   /* Put your mantine theme override here */
-});
+})
 
 export default function RootLayout({
                                      children,
@@ -29,13 +29,15 @@ export default function RootLayout({
     <head>
       <ColorSchemeScript />
     </head>
-        <body>
-    <MantineProvider theme={theme} defaultColorScheme={'dark'} forceColorScheme={'dark'}>
+    <body>
+    <MantineProvider forceColorScheme={'dark'}>
       <ModalsProvider>
+        <EbayProvider>
           {children}
+        </EbayProvider>
       </ModalsProvider>
     </MantineProvider>
-        </body>
+    </body>
     </html>
-)
+  )
 }

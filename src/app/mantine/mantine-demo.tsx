@@ -6,11 +6,11 @@ import { modals } from '@mantine/modals'
 export const MantineDemo = () => {
   return (
     <div>
-      {/*<MantineControlled />*/}
       <MantineUncontrolled />
     </div>
   )
 }
+
 
 const MantineUncontrolled = () => {
   const [timer, setTimer] = useState(0)
