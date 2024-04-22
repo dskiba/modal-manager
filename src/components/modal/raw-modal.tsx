@@ -3,11 +3,8 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from 'components/dialog'
-import { useSelectModal } from 'libs/modal-manager'
-import { ModalId } from 'libs/modal-manager/types'
 import { FC, ReactNode } from 'react'
 
 type ModalProps = {
@@ -16,16 +13,15 @@ type ModalProps = {
   children: ReactNode
 }
 export const ModalRaw: FC<ModalProps> = (props) => {
-  console.log({props})
-  const {isOpen, onClose, children} = props
+  console.log({ props })
+  const { isOpen, onClose, children } = props
   return <Dialog open={isOpen} onOpenChange={(state) => {
-    console.log({ state, onClose })
     if (!state) onClose()
   }}>
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Are you absolutely sure?</DialogTitle>
-        <DialogDescription/>
+        <DialogDescription />
       </DialogHeader>
       {children}
     </DialogContent>

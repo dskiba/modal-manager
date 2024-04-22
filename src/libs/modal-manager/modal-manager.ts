@@ -2,16 +2,19 @@ import { Modal, ModalId, ModalRequest, ModalStack, ModalStatus } from './types'
 import { createStore } from 'libs/store'
 import { generateId } from './utils'
 
-export const createModalManager = (initStack: ModalStack = []) => createStore(initStack, {
-  open: (modals, modal: ModalRequest) => {
+export const createModalManager = <Options = Record<string, any>>(initStack: ModalStack<Options> = []) => createStore(initStack, {
+  open: (modals, modal: ModalRequest<Options>) => {
     const idx = modals.findIndex(m => m.id === modal.id)
     const modalFromStack = modals[idx]
     if (!modalFromStack) {
+      const options = modal.options || {}
       const id = modal.id || generateId()
-      const newModal: Modal = {
+      const newModal: Modal<Options> = {
         id,
         status: ModalStatus.OPENED,
-        ...modal,
+        props: modal.props,
+        children: modal.children,
+        options: modal.options as Options
       }
       return [...modals, newModal]
     }

@@ -1,7 +1,13 @@
 'use client'
 import { createContext, FC, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { modals, useCreateModal, useSelectModal, useSelectModalIds } from './modals'
-import { ModalId, ModalRequest, ModalStatus } from 'libs/modal-manager/types'
+import {
+  CustomModalRequest,
+  modals,
+  useCreateModal,
+  useSelectModal,
+  useSelectModalIds
+} from './modals'
+import { ModalId, ModalStatus } from 'libs/modal-manager/types'
 import { ModalRaw } from 'components/modal'
 
 
@@ -33,6 +39,7 @@ export const ModalsRenderer: FC = () => {
 
 const ModalRenderer: FC<{ id: ModalId }> = ({ id }) => {
   const modal = useSelectModal(id)
+  console.log({ modal })
   const isOpen = modal?.status === ModalStatus.OPENED
   const onClose = useCallback(() => modals.close(id), [id])
   const contextValue = useMemo(() => ({ id, isOpen, onClose }), [id, isOpen, onClose])
@@ -62,7 +69,7 @@ const SomeModalBody: FC<{ someId: string, timerValue?: number }> = (props) => {
 }
 
 export const ModalDemoWithHookRules = () => {
-  const { open, close } = useCreateModal(SomeModalBody)
+  const { open, close } = useCreateModal(SomeModalBody, { options: { position: 'left' } })
   const [timerValue, setTimerValue] = useState(0)
 
   useEffect(() => {
@@ -88,7 +95,7 @@ export const ModalDemoWithHookRules = () => {
 }
 
 setTimeout(() => {
-  const payload: ModalRequest<typeof SomeModalBody> = { children: SomeModalBody, props: { someId: '13' } }
+  const payload: CustomModalRequest<typeof SomeModalBody> = { children: SomeModalBody, props: { someId: '13' }, options: { position: 'left' } }
   modals.open(payload)
 }, 5000)
 
