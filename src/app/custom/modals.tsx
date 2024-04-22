@@ -1,7 +1,13 @@
 'use client'
-import { ModalId, ModalRequest } from 'libs/modal-manager/types'
-import { createModalManager, createUseModalHook, createUseStoreSelector } from 'libs/modal-manager'
+import {
+  createModalManager,
+  createUseModalHook,
+  createUseStoreSelector,
+  type ModalId,
+  type ModalRequest,
+} from 'libs/modal-manager'
 import { FC } from 'react'
+
 
 type Options = { position: 'left' | 'right' | 'center', title?: string }
 
@@ -14,4 +20,6 @@ const useModalSelector = createUseStoreSelector(store)
 export const useSelectModalIds = () => useModalSelector((s) => s.map(m => m.id))
 export const useSelectModal = (id: ModalId) => useModalSelector(s => s.find(m => m.id === id))
 
-export type CustomModalRequest<Comp = FC<any>> = ModalRequest<Options, Comp>
+type CustomModalRequest<Comp = FC<any>> = ModalRequest<Options, Comp>
+
+export type { ModalId, ModalRequest, CustomModalRequest }

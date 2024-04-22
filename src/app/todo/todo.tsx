@@ -33,4 +33,8 @@ export const Todos = () => {
   )
 }
 
+setTimeout(() => {
+  todoActions.addTodo()
+},3000)
+
 const MemoTodo = memo(Todo)

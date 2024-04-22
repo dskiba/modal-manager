@@ -7,8 +7,9 @@ import {
   useSelectModal,
   useSelectModalIds
 } from './modals'
-import { ModalId, ModalStatus } from 'libs/modal-manager/types'
+import { ModalId } from './modals'
 import { ModalRaw } from 'components/modal'
+import { ModalStatus } from 'libs/modal-manager'
 
 
 let params: { id?: string } = {
@@ -20,6 +21,7 @@ type Context = {
   isOpen: boolean
   onClose: () => void
 }
+
 const ModalContext = createContext<Context | null>(null)
 export const useModal = () => {
   const context = useContext(ModalContext)
@@ -47,7 +49,7 @@ const ModalRenderer: FC<{ id: ModalId }> = ({ id }) => {
   const Component = modal.children
   return <ModalContext.Provider value={contextValue}>
     <ModalRaw isOpen={isOpen} onClose={onClose}>
-      <Component {...modal.props} />
+      {Component && <Component {...modal.props} />}
     </ModalRaw>
   </ModalContext.Provider>
 }
@@ -95,7 +97,11 @@ export const ModalDemoWithHookRules = () => {
 }
 
 setTimeout(() => {
-  const payload: CustomModalRequest<typeof SomeModalBody> = { children: SomeModalBody, props: { someId: '13' }, options: { position: 'left' } }
+  const payload: CustomModalRequest<typeof SomeModalBody> = {
+    children: SomeModalBody,
+    props: { someId: '13' },
+    options: { position: 'left' }
+  }
   modals.open(payload)
 }, 5000)
 

@@ -7,21 +7,18 @@ export const createModalManager = <Options = Record<string, any>>(initStack: Mod
     const idx = modals.findIndex(m => m.id === modal.id)
     const modalFromStack = modals[idx]
     if (!modalFromStack) {
-      const options = modal.options || {}
       const id = modal.id || generateId()
       const newModal: Modal<Options> = {
         id,
-        status: ModalStatus.OPENED,
-        props: modal.props,
-        children: modal.children,
-        options: modal.options as Options
+        status: 'OPENED',
+        ...modal,
       }
       return [...modals, newModal]
     }
-    if (modalFromStack.status === ModalStatus.OPENED) {
+    if (modalFromStack.status === 'OPENED') {
       return modals
     }
-    modalFromStack.status = ModalStatus.OPENED
+    modalFromStack.status = 'OPENED'
     if (modal.props) modalFromStack.props = modal.props
     return [...modals]
   },
