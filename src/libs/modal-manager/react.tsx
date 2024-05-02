@@ -8,7 +8,7 @@ export { createUseStoreSelector } from 'libs/store'
 
 export const createUseModalHook = <Options = Record<string, any>>
 (actions: ReturnType<typeof createModalManager<Options>>['actions']) =>
-  <T extends FC<any>>(children: T, options?: Partial<Omit<Modal<Options>, 'children'>>) => {
+  <T extends FC<any>>(children: T, options?: Partial<Omit<Modal<Options, T>, 'children'>>) => {
     const id = useRef<ModalId>(options?.id || generateId()).current
 
     // ref for options to avoid re-render or rule-of-hooks

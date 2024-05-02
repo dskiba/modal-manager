@@ -5,11 +5,12 @@ import { ModalStatus } from '../types'
 
 let store: ReturnType<typeof createModalManager>
 describe('modals stack', () => {
+
   beforeEach(() => {
     store = createModalManager()
   })
+
   it('should open modal', () => {
-    // const store = createModalManager()
     store.actions.open({ id: '1' })
     expect(store.getState()).toEqual([{ id: '1', status: ModalStatus.OPENED }])
   })

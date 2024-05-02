@@ -1,6 +1,7 @@
-import { Modal, ModalId, ModalRequest, ModalStack, ModalStatus } from './types'
+import { Modal, ModalId, ModalRequest, ModalStack } from './types'
 import { createStore } from 'libs/store'
 import { generateId } from './utils'
+
 
 export const createModalManager = <Options = Record<string, any>>(initStack: ModalStack<Options> = []) => createStore(initStack, {
   open: (modals, modal: ModalRequest<Options>) => {

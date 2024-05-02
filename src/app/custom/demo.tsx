@@ -3,7 +3,7 @@ import { createContext, FC, useCallback, useContext, useEffect, useMemo, useStat
 import {
   CustomModalRequest,
   modals,
-  useCreateModal,
+  useModal,
   useSelectModal,
   useSelectModalIds
 } from './modals'
@@ -23,7 +23,8 @@ type Context = {
 }
 
 const ModalContext = createContext<Context | null>(null)
-export const useModal = () => {
+
+export const useModalCtx = () => {
   const context = useContext(ModalContext)
   if (!context) throw new Error('useModal must be used inside ModalContext.Provider')
   return context
@@ -56,7 +57,7 @@ const ModalRenderer: FC<{ id: ModalId }> = ({ id }) => {
 
 
 const SomeModalBody: FC<{ someId: string, timerValue?: number }> = (props) => {
-  const { onClose } = useModal()
+  const { onClose } = useModalCtx()
   return (<div className={'text-gray-700'}>
     <h3>someId: {props.someId}</h3>
     <br />
@@ -70,9 +71,14 @@ const SomeModalBody: FC<{ someId: string, timerValue?: number }> = (props) => {
   </div>)
 }
 
+
 export const ModalDemoWithHookRules = () => {
-  const { open, close } = useCreateModal(SomeModalBody, { options: { position: 'left' } })
   const [timerValue, setTimerValue] = useState(0)
+
+  const { open, close } = useModal(SomeModalBody, {
+    props: { someId: '47', timerValue: timerValue },
+    options: { position: 'left' }
+  })
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -92,6 +98,11 @@ export const ModalDemoWithHookRules = () => {
       <button onClick={close} className={'bg-pink-300 text-gray-900 p-2 rounded'}>
         Close modal
       </button>
+
+      {/*<ModalRaw isOpen={false} onClose={() => {}}>*/}
+      {/*  <SomeModalBody someId={paramId} timerValue={timerValue} />*/}
+      {/*</ModalRaw>*/}
+
     </div>
   )
 }

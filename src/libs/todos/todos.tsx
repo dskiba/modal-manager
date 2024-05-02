@@ -28,7 +28,10 @@ const useTodosSelector = createUseStoreSelector(todosStore)
 
 export const todoActions = todosStore.actions
 
-export const useSelectTodosIds = () => useTodosSelector((state) => state.map(t => t.id), (prev, next) => prev.length === next.length)
-export const useSelectTodo = (id: number) => useTodosSelector(state => state.find(todo => todo.id === id))
+export const useSelectTodosIds = () => useTodosSelector((state) => state.map(t => t.id),
+  (prev, next) => prev.length === next.length)
+
+export const useSelectTodo = (id: number) => useTodosSelector(state =>
+  state.find(todo => todo.id === id))
 
 
