@@ -2,14 +2,14 @@
 import { createContext, FC, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
   CustomModalRequest,
-  modals,
+  modals, useIsModalOnTop,
   useModal,
   useSelectModal,
-  useSelectModalIds
+  useSelectModalIds, useSelectModals
 } from './modals'
 import { ModalId } from './modals'
 import { ModalRaw } from 'components/modal'
-import { ModalStatus } from 'libs/modal-manager'
+import { Modal, ModalStatus } from 'libs/modal-manager'
 
 
 let params: { id?: string } = {
@@ -34,50 +34,100 @@ export const useModalCtx = () => {
 export const ModalsRenderer: FC = () => {
   const modalIds = useSelectModalIds()
   return <>
-    {modalIds.map(id => (
-      <ModalRenderer key={id} id={id} />
+    <Overlay />
+    {modalIds.map((id) => (
+      <>
+        <ModalRenderer key={id} id={id} />
+      </>
     ))}
   </>
 }
 
+export const Overlay: FC = () => {
+  const modals = useSelectModals()
+  const hasModalToRender = modals.some(modal => modal.status !== ModalStatus.CLOSED)
+
+  if (!hasModalToRender) return null
+
+  return (
+    <div
+      id={'modal-overlay'}
+      className={'fixed top-0 left-0 right-0 bottom-0 pointer-events-none'}
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      }}
+    />
+  )
+}
+
+
 const ModalRenderer: FC<{ id: ModalId }> = ({ id }) => {
   const modal = useSelectModal(id)
-  console.log({ modal })
+  const isOnTop = useIsModalOnTop(id)
   const isOpen = modal?.status === ModalStatus.OPENED
   const onClose = useCallback(() => modals.close(id), [id])
   const contextValue = useMemo(() => ({ id, isOpen, onClose }), [id, isOpen, onClose])
   if (!modal) return null
   const Component = modal.children
+
+  const ModalComp = modal.options?.position === 'left' ? ModalRaw : ModalRaw
+
   return <ModalContext.Provider value={contextValue}>
-    <ModalRaw isOpen={isOpen} onClose={onClose}>
+    <ModalComp isOpen={isOpen} onClose={onClose} isOnTop={isOnTop}>
       {Component && <Component {...modal.props} />}
-    </ModalRaw>
+    </ModalComp>
   </ModalContext.Provider>
 }
 
 
 const SomeModalBody: FC<{ someId: string, timerValue?: number }> = (props) => {
-  const { onClose } = useModalCtx()
-  return (<div className={'text-gray-700'}>
-    <h3>someId: {props.someId}</h3>
-    <br />
-    <h4>some timer {props.timerValue}</h4>
-    <button
-      className={'bg-pink-300 text-gray-900 p-2 rounded'}
-      onClick={onClose}
-    >
-      close
-    </button>
-  </div>)
+  const { onClose, id } = useModalCtx()
+  // const close = modals.close(id)
+  return (<div className={'text-gray-800'}>
+      <h3>someId: {props.someId}</h3>
+      <br />
+      <h4>timer: {props.timerValue}</h4>
+      <div className={'flex flex-col gap-2'}>
+        <button
+          className={'bg-pink-300 text-gray-900 p-2 rounded'}
+          onClick={() => modals.open({
+            children: () => <div className={'flex flex-col gap-2'}>
+              <div>
+                hello another world, {props.someId}</div>
+              <button
+                className={'bg-pink-300 text-gray-900 p-2 rounded'}
+                onClick={() => modals.remove(id)}>
+                close outer modal
+              </button>
+            </div>
+          })}>
+          open another modal
+        </button>
+        <button
+          className={'bg-pink-300 text-gray-900 p-2 rounded'}
+          onClick={onClose}
+        >
+          close
+        </button>
+      </div>
+    </div>
+  )
 }
 
 
 export const ModalDemoWithHookRules = () => {
+  const [isControlledModalOpen, setIsControlledModalOpen] = useState(false)
   const [timerValue, setTimerValue] = useState(0)
 
   const { open, close } = useModal(SomeModalBody, {
     props: { someId: '47', timerValue: timerValue },
-    options: { position: 'left' }
+    options: { position: 'left' },
+    id: '10'
+  })
+
+  const { open: openSecond } = useModal(SomeModalBody, {
+    options: { position: 'left' },
+    id: '20'
   })
 
   useEffect(() => {
@@ -91,28 +141,43 @@ export const ModalDemoWithHookRules = () => {
   if (!paramId) return null
   return (
     <div className={'flex flex-col gap-2 max-w-36'}>
-      <button onClick={() => open({ someId: paramId, timerValue })}
+      <button onClick={() => open()}
+              className={'bg-pink-300 text-gray-900 p-2 rounded'}>
+        Open modal 1
+      </button>
+      <button onClick={() => openSecond({ someId: paramId, timerValue })}
+              className={'bg-pink-300 text-gray-900 p-2 rounded'}>
+        Open modal 2
+      </button>
+      <button onClick={() => modals.open({ children: () => <div>hello world, {timerValue}</div> })}
               className={'bg-pink-300 text-gray-900 p-2 rounded'}>
         Open modal with hook rules
       </button>
-      <button onClick={close} className={'bg-pink-300 text-gray-900 p-2 rounded'}>
-        Close modal
+
+      <button onClick={() => setIsControlledModalOpen(true)}
+              className={'bg-pink-300 text-gray-900 p-2 rounded'}>
+        Open controlled modal
       </button>
 
-      {/*<ModalRaw isOpen={false} onClose={() => {}}>*/}
-      {/*  <SomeModalBody someId={paramId} timerValue={timerValue} />*/}
-      {/*</ModalRaw>*/}
+      <ModalRaw isOpen={isControlledModalOpen} onClose={() => setIsControlledModalOpen(false)}>
+        <div>
+          controlled modal
+          <div>
+            timer: {timerValue}
+          </div>
+        </div>
+      </ModalRaw>
 
     </div>
   )
 }
 
-setTimeout(() => {
-  const payload: CustomModalRequest<typeof SomeModalBody> = {
-    children: SomeModalBody,
-    props: { someId: '13' },
-    options: { position: 'left' }
-  }
-  modals.open(payload)
-}, 5000)
-
+// setTimeout(() => {
+//   const payload: CustomModalRequest<typeof SomeModalBody> = {
+//     children: SomeModalBody,
+//     id: '33',
+//     props: { someId: '13' },
+//     // options: { position: 'left' }
+//   }
+//   modals.open(payload)
+// }, 5000)

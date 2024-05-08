@@ -17,7 +17,7 @@ export const createUseModalHook = <Options = Record<string, any>>
     useEffect(() => {
       // if default status open, open it
       if (optionsRef.current?.status === ModalStatus.OPENED) {
-        actions.open({ id, children, status: ModalStatus.CLOSED, ...optionsRef.current })
+        actions.open({ id, children, ...optionsRef.current })
       }
       return () => {
         actions.remove(id)
@@ -29,7 +29,9 @@ export const createUseModalHook = <Options = Record<string, any>>
     }, [id])
 
     const open = useCallback((props: PropsFrom<T>) => {
-      actions.open({ id, children, ...optionsRef.current, props })
+      console.log({ props, optionsRef })
+      const currProps = props || optionsRef.current?.props
+      actions.open({ id, children, ...optionsRef.current, props: currProps })
     }, [children, id])
 
     return { open, close, id }

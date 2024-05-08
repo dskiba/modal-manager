@@ -31,7 +31,6 @@ const MantineUncontrolled = () => {
         Timer synced only when open
         <br />
         timer: {timer}
-
         <br />
         <button
           className={'bg-pink-300 text-gray-900 p-2 rounded w-fit'}

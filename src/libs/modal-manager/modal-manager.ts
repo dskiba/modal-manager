@@ -26,8 +26,9 @@ export const createModalManager = <Options = Record<string, any>>(initStack: Mod
 
   close: (modals, id: ModalId) => {
     const idx = modals.findIndex(modal => modal.id === id)
-    if (idx === -1) return modals
-    modals.splice(idx, 1)
+    modals[idx].status = 'CLOSED'
+    // if (idx === -1) return modals
+    // modals.splice(idx, 1)
     return [...modals]
   },
 
